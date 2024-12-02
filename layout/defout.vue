@@ -27,13 +27,16 @@
                   placeholder="Search"
                   aria-label="Search"
               />
-              <button class="btn btn-warning" >Поиск фильма</button>
+              <button class="btn btn-warning">Поиск фильма</button>
             </form>
+          </div>
+          <div class="logisik sign up/in" id="up-in">
+            <button class="btn btn-warning me-2">Sign in</button>
+            <button class="btn btn-warning">Sign up</button>
           </div>
         </div>
       </nav>
     </header>
-
     <!-- Main Content -->
     <main class="main-content container mt-5 pt-5">
       <div class="filters d-flex justify-content-between align-items-center mb-4">
@@ -53,12 +56,70 @@
           </select>
         </div>
         <div>
-          <button class="btn btn-dark me-2">Название</button>
-          <button class="btn btn-dark me-2">Год</button>
-          <button class="btn btn-dark me-2">Рейтинг</button>
-          <button class="btn btn-dark">Reset</button>
+          <button class="btn btn-warning me-2">Название</button>
+          <button class="btn btn-warning me-2">Год</button>
+          <button class="btn btn-warning me-2">Рейтинг</button>
+          <button class="btn btn-warning">Reset</button>
         </div>
       </div>
+
+      <!-- Carousel -->
+      <div id="carouselExample" class="carousel slide mb-4">
+        <div class="carousel-inner">
+          <div class="carousel-item active">
+            <img src="https://img.championat.com/s/1350x900/news/big/s/f/sony-poobeschala-vypustit-prodolzhenie-filma-ancharted-na-kartah-ne-znachitsya_16916610021384368970.jpg" class="d-block w-100" alt="Слайд 1" />
+          </div>
+          <div class="carousel-item">
+            <img src="https://avatars.mds.yandex.net/get-kinopoisk-image/1777765/d64aea4b-3938-498b-91b0-ce9e440d580d/1920x" class="d-block w-100" alt="Слайд 2" />
+          </div>
+          <div class="carousel-item">
+            <img src="https://static.okko.tv/images/v2/16443898" class="d-block w-100" alt="Слайд 3" />
+          </div>
+        </div>
+        <button
+            class="carousel-control-prev"
+            type="button"
+            data-bs-target="#carouselExample"
+            data-bs-slide="prev"
+        >
+          <span class="carousel-control-prev-icon" aria-hidden="true"></span>
+          <span class="visually-hidden">Previous</span>
+        </button>
+        <button
+            class="carousel-control-next"
+            type="button"
+            data-bs-target="#carouselExample"
+            data-bs-slide="next"
+        >
+          <span class="carousel-control-next-icon" aria-hidden="true"></span>
+          <span class="visually-hidden">Next</span>
+        </button>
+      </div>
+
+      <!-- Toast Notification -->
+      <div
+          class="toast show"
+          role="alert"
+          aria-live="assertive"
+          aria-atomic="true"
+          style="position: absolute; top: 20px; right: 20px; z-index: 1050;"
+      >
+        <div class="toast-header">
+          <img src="/images/logo.png" class="rounded me-2" alt="..." />
+          <strong class="me-auto">CineQeest</strong>
+          <small>2 sec ago</small>
+          <button
+              type="button"
+              class="btn-close"
+              data-bs-dismiss="toast"
+              aria-label="Close"
+          ></button>
+        </div>
+        <div class="toast-body">
+          Привет, ты еще не зарегестрирован, зарегестрируйся и поддержи наш проект по бесплатному кино
+        </div>
+      </div>
+
       <div class="row">
         <div class="col-sm-6 col-md-4 col-lg-3 mb-4" v-for="i in 6" :key="i">
           <div class="card h-100 shadow-sm">
@@ -66,8 +127,7 @@
                 class="card-img-top d-flex align-items-center justify-content-center bg-light"
                 style="height: 200px;"
             >
-              <span>Тут будет картинка
-              </span>
+              <span>Тут будет картинка</span>
             </div>
             <div class="card-body" id="title-text">
               <h5 class="card-title">Title Film</h5>
@@ -76,30 +136,11 @@
                 Продолжительность<br />
                 Жанры
               </p>
-              <button class="btn btn-primary">Начать просмотор</button>
+              <button class="btn btn-warning">Начать просмотор</button>
             </div>
           </div>
         </div>
       </div>
-      <nav class="d-flex justify-content-center mt-4">
-        <ul class="pagination">
-          <li class="page-item">
-            <a class="page-link" href="#">1</a>
-          </li>
-          <li class="page-item">
-            <a class="page-link" href="#">2</a>
-          </li>
-          <li class="page-item">
-            <a class="page-link" href="#">3</a>
-          </li>
-          <li class="page-item">
-            <a class="page-link" href="#">4</a>
-          </li>
-          <li class="page-item">
-            <a class="page-link" href="#">5</a>
-          </li>
-        </ul>
-      </nav>
     </main>
 
     <!-- Footer -->
@@ -111,6 +152,7 @@
   </div>
 </template>
 
+
 <script>
 export default {
   name: "MoviePage",
@@ -118,14 +160,25 @@ export default {
 </script>
 
 <style scoped>
-.navbar-collapse{
-  margin-top: 10px;
-  margin-left: 10px;
-  margin-top: 10px;
-
+header {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  z-index: 1000;
 }
 .main-content {
-  margin-top: 70px; /* Offset for fixed navbar */
+  margin-top: 70px;
+  background: rgba(0, 0, 0, 0.7);
+  padding: 20px;
+  border-radius: 10px;
+}
+.navbar-collapse {
+  margin-top: 10px;
+  margin-left: 10px;
+}
+.main-content {
+  margin-top: 70px;
 }
 .logo {
   height: 60px;
@@ -135,7 +188,7 @@ export default {
 }
 .card:hover {
   transform: scale(1.05);
-  box-shadow: 0 10px 15px rgba(127, 8, 255, 0.5);
+  box-shadow: 0 10px 15px gold;
   border-radius: 10px;
 }
 .pagination .page-link {
@@ -145,12 +198,11 @@ export default {
   background-color: #e9ecef;
 }
 .card-body {
-  background-color: rgb(206, 9, 206);
-  color: white; /* Для текста внутри card-body */
+  background-color: red;
+  color: white;
   border-radius: 10px;
-  box-shadow: 0 10px 15px rgba(127, 8, 255, 0.5);
+  box-shadow: 0 10px 15px gold;
 }
-
 
 .card-body h5,
 .card-body p {
@@ -162,7 +214,41 @@ export default {
   box-shadow: 0 10px 15px rgba(127, 8, 255, 0.5);
 }
 
-.card-body #p-text{
-  color: white;
+.up-in {
+  margin-right: auto;
+  padding: 10px;
 }
+.carousel-inner img {
+  height: 600px;
+  object-fit: cover;
+  border-radius: 10px;
+  box-shadow: 0 10px 15px rgba(127, 8, 255, 0.5);
+}
+.toast-header img {
+  height: 40px;
+  width: 40px;
+}
+
+.toast-header {
+    position: fixed;
+    top: 0;
+    margin-top: 500px;
+    margin-right: 500px;
+    z-index: 100;
+    width: 350px;
+  background-color: gold;
+  border-radius: 10px;
+  }
+.toast-body{
+  position: fixed;
+  top: 0;
+  margin-top: 540px;
+  margin-right: 550px;
+  z-index: 100;
+  width: 350px;
+  background-color: gold;
+  border-radius: 10px;
+}
+
+
 </style>
