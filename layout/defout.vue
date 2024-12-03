@@ -19,18 +19,70 @@
           >
             <span class="navbar-toggler-icon"></span>
           </button>
+
           <div class="collapse navbar-collapse" id="navbarCollapse">
-            <form class="d-flex" role="search">
+            <form class="d-flex" @submit.prevent="searchMovies">
               <input
                   class="form-control me-2"
                   type="search"
+                  v-model="searchQuery"
                   placeholder="Search"
                   aria-label="Search"
               />
-              <button class="btn btn-warning">Поиск фильма</button>
+              <button class="btn btn-warning me-2" type="submit">Поиск фильма</button>
+              <div class="dropdown me-2">
+                <button
+                    class="btn btn-warning dropdown-toggle"
+                    type="button"
+                    id="ratingDropdown"
+                    data-bs-toggle="dropdown"
+                    aria-expanded="false"
+                >
+                  По рейтингу
+                </button>
+                <ul class="dropdown-menu" aria-labelledby="ratingDropdown">
+                  <li><a class="dropdown-item" @click="sortByRating('desc')">По возрастанию</a></li>
+                  <li><a class="dropdown-item" @click="sortByRating('ask')">По убыванию</a></li>
+                </ul>
+              </div>
+              <div class="dropdown me-2">
+                <button
+                    class="btn btn-warning dropdown-toggle"
+                    type="button"
+                    id="countryDropdown"
+                    data-bs-toggle="dropdown"
+                    aria-expanded="false"
+                >
+                  Страна
+                </button>
+                <ul class="dropdown-menu" aria-labelledby="countryDropdown">
+                  <li v-for="country in uniqueCountries" :key="country">
+                    <a class="dropdown-item" @click="filterByCountry(country)">{{ country }}</a>
+                  </li>
+                </ul>
+              </div>
+              <div class="dropdown me-2">
+                <button
+                    class="btn btn-warning dropdown-toggle"
+                    type="button"
+                    id="yearDropdown"
+                    data-bs-toggle="dropdown"
+                    aria-expanded="false"
+                >
+                  Год
+                </button>
+                <ul class="dropdown-menu" aria-labelledby="yearDropdown">
+                  <li v-for="year in uniqueYears" :key="year">
+                    <a class="dropdown-item" @click="filterByYear(year)">{{ year }}</a>
+                  </li>
+                </ul>
+              </div>
+              <button class="btn btn-warning me-2" type="button" @click="resetFilters">Reset</button>
             </form>
           </div>
-          <div class="logisik sign up/in" id="up-in">
+
+          <!-- Sign in / Sign up Buttons -->
+          <div class="logisik ms-auto">
             <button class="btn btn-warning me-2">Sign in</button>
             <button class="btn btn-warning">Sign up</button>
           </div>
@@ -40,113 +92,57 @@
 
     <!-- Main Content -->
     <main class="main-content container mt-5 pt-5">
-      <!-- Carousel -->
-      <div id="carouselExample" class="carousel slide mb-4">
-        <div class="carousel-inner">
-          <div class="carousel-item active">
-            <img
-                src="https://img.championat.com/s/1350x900/news/big/s/f/sony-poobeschala-vypustit-prodolzhenie-filma-ancharted-na-kartah-ne-znachitsya_16916610021384368970.jpg"
-                class="d-block w-100"
-                alt="Слайд 1"
-            />
-          </div>
-          <div class="carousel-item">
-            <img
-                src="https://avatars.mds.yandex.net/get-kinopoisk-image/1777765/d64aea4b-3938-498b-91b0-ce9e440d580d/1920x"
-                class="d-block w-100"
-                alt="Слайд 2"
-            />
-          </div>
-          <div class="carousel-item">
-            <img
-                src="https://static.okko.tv/images/v2/16443898"
-                class="d-block w-100"
-                alt="Слайд 3"
-            />
-          </div>
-        </div>
-        <button
-            class="carousel-control-prev"
-            type="button"
-            data-bs-target="#carouselExample"
-            data-bs-slide="prev"
-        >
-          <span class="carousel-control-prev-icon" aria-hidden="true"></span>
-          <span class="visually-hidden">Previous</span>
-        </button>
-        <button
-            class="carousel-control-next"
-            type="button"
-            data-bs-target="#carouselExample"
-            data-bs-slide="next"
-        >
-          <span class="carousel-control-next-icon" aria-hidden="true"></span>
-          <span class="visually-hidden">Next</span>
-        </button>
-      </div>
-
-      <!-- Movie Cards -->
-      <div class="row">
+      <div class="row row-cols-1 row-cols-md-3 g-4">
         <div
-            class="col-sm-6 col-md-4 col-lg-4 mb-4"
-            v-for="movie in films"
-            :key="movie.id"
+            class="col"
+            v-for="film in filteredFilms"
+            :key="film.id"
         >
-          <div class="card h-100 shadow-sm">
+          <div class="card">
             <img
-                :src="movie.link_img || 'https://via.placeholder.com/150'"
+                v-if="film.link_img"
+                :src="film.link_img"
                 class="card-img-top"
-                :alt="movie.name"
-                style="height: 200px; object-fit: cover;"
+                alt="film.link_img"
+            />
+            <img
+                v-else
+                src="https://m.media-amazon.com/images/M/MV5BYmQyYmU4MTgtNmFlZS00NzVhLTg0ZWEtMjgzZTIzMjg5MTcwXkEyXkFqcGdeQXVyMTk0NjM1ODQ@._V1_.jpg"
+                class="card-img-top"
+                alt="Default Image"
             />
             <div class="card-body">
-              <h5 class="card-title">{{ movie.name }}</h5>
-              <p class="card-text text-muted">
-                <strong>Рейтинг:</strong> {{ movie.ratingAvg }}<br />
-                <strong>Жанр:</strong>
-                {{ movie.categories && movie.categories.length
-                  ? movie.categories.map((cat) => cat.name).join(", ")
-                  : "Не указано" }}
-                <br />
-                <strong>Длительность:</strong> {{ movie.duration }} мин<br />
-                <strong>Год:</strong> {{ movie.year_of_issue }}<br />
-                <strong>Страна:</strong>
-                {{ movie.country?.name || "Не указано" }}<br />
-                <strong>Отзывы:</strong> {{ movie.reviewCount }}
+              <h5 class="card-title">{{ film.name }}</h5>
+              <p class="card-text">Рейтинг: {{ film.ratingAvg }}</p>
+              <p class="card-text">Длительность: {{ film.duration }} мин.</p>
+              <p class="card-text">
+                Жанры:
+                <template v-for="category in film.categories" :key="category.id">
+                  {{ category.name }}
+                </template>
               </p>
-              <a
-                  :href="movie.link_kinopoisk || '#'"
-                  class="btn btn-warning"
-                  target="_blank"
-              >На Кинопоиск</a>
-              <a
-                  :href="movie.link_video || '#'"
-                  class="btn btn-primary mt-2"
-                  target="_blank"
-              >Смотреть трейлер</a>
+              <button type="button" class="btn btn-info">Подробнее</button>
             </div>
           </div>
         </div>
       </div>
     </main>
-
-    <!-- Footer -->
-    <footer class="footer mt-auto py-3 bg-dark text-white">
-      <div class="container text-center">
-        <span>&copy; 2024 CineQeest. All rights reserved.</span>
-      </div>
-    </footer>
   </div>
 </template>
 
+
 <script>
-import { ref, onMounted } from "vue";
+import { ref, computed, onMounted } from "vue";
 import axios from "axios";
 
 export default {
   name: "MoviePage",
   setup() {
     const films = ref([]);
+    const searchQuery = ref("");
+    const sortOption = ref("");
+    const filterCountry = ref("");
+    const filterYear = ref("");
 
     const fetchFilms = async () => {
       try {
@@ -159,15 +155,109 @@ export default {
       }
     };
 
+    const uniqueCountries = computed(() =>
+        [...new Set(films.value.map((film) => film.country?.name).filter(Boolean))]
+    );
+
+    const uniqueYears = computed(() =>
+        [...new Set(films.value.map((film) => film.year_of_issue))]
+    );
+
+    const filteredFilms = computed(() => {
+      let result = [...films.value];
+
+      if (searchQuery.value) {
+        result = result.filter((movie) =>
+            movie.name.toLowerCase().includes(searchQuery.value.toLowerCase())
+        );
+      }
+
+      if (sortOption.value) {
+        result.sort((a, b) =>
+            sortOption.value === "asc" ? a.ratingAvg - b.ratingAvg : b.ratingAvg - a.ratingAvg
+        );
+      }
+
+      if (filterCountry.value) {
+        result = result.filter(
+            (movie) =>
+                movie.country?.name.toLowerCase() ===
+                filterCountry.value.toLowerCase()
+        );
+      }
+
+      if (filterYear.value) {
+        result = result.filter(
+            (movie) => movie.year_of_issue === parseInt(filterYear.value)
+        );
+      }
+
+      return result;
+    });
+
+    const searchMovies = () => {
+      console.log("Поиск фильмов:", searchQuery.value);
+    };
+
+    const sortByRating = (order) => {
+      sortOption.value = order;
+    };
+
+    const filterByCountry = (country) => {
+      filterCountry.value = country;
+    };
+
+    const filterByYear = (year) => {
+      filterYear.value = year;
+    };
+
+    const resetFilters = () => {
+      searchQuery.value = "";
+      sortOption.value = "";
+      filterCountry.value = "";
+      filterYear.value = "";
+    };
+
     onMounted(fetchFilms);
 
     return {
       films,
+      searchQuery,
+      uniqueCountries,
+      uniqueYears,
+      filteredFilms,
+      searchMovies,
+      sortByRating,
+      filterByCountry,
+      filterByYear,
+      resetFilters,
     };
   },
 };
 </script>
 
+
+<style scoped>
+.card-img-top {
+  height: 300px;
+  object-fit: cover;
+  width: 100%;
+  border-radius: 10px;
+}
+</style>
+<style scoped>
+.card-img-top {
+  height: 600px; /* Увеличено с 300px до 400px */
+  object-fit: cover;
+  width: 100%;
+  border-radius: 10px;
+}
+
+header .logisik {
+  display: flex;
+  align-items: center;
+}
+</style>
 <style scoped>
 header {
   position: fixed;
@@ -194,8 +284,6 @@ header {
 }
 .card:hover {
   transform: scale(1.05);
-  box-shadow: 0 10px 15px gold;
-  border-radius: 10px;
 }
 .card-body {
   background-color: red;
@@ -208,5 +296,11 @@ header {
   object-fit: cover;
   border-radius: 10px;
   box-shadow: 0 10px 15px rgba(127, 8, 255, 0.5);
+}
+.card-img-top {
+  height: 300px;
+  object-fit: cover;
+  width: 100%;
+  border-radius: 10px;
 }
 </style>
