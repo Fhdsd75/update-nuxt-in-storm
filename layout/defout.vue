@@ -37,43 +37,32 @@
         </div>
       </nav>
     </header>
+
     <!-- Main Content -->
     <main class="main-content container mt-5 pt-5">
-      <div class="filters d-flex justify-content-between align-items-center mb-4">
-        <div class="d-flex">
-          <select class="form-select me-2" aria-label="Genre">
-            <option selected>Жанр</option>
-            <option value="1">Комедия</option>
-            <option value="2">Один дома)))))))))</option>
-            <option value="3">Драма</option>
-            <option value="4">Боевик</option>
-          </select>
-          <select class="form-select" aria-label="Country">
-            <option selected>Cтрана</option>
-            <option value="1">Франция</option>
-            <option value="2">Америка</option>
-            <option value="3">Штрафстан</option>
-          </select>
-        </div>
-        <div>
-          <button class="btn btn-warning me-2">Название</button>
-          <button class="btn btn-warning me-2">Год</button>
-          <button class="btn btn-warning me-2">Рейтинг</button>
-          <button class="btn btn-warning">Reset</button>
-        </div>
-      </div>
-
       <!-- Carousel -->
       <div id="carouselExample" class="carousel slide mb-4">
         <div class="carousel-inner">
           <div class="carousel-item active">
-            <img src="https://img.championat.com/s/1350x900/news/big/s/f/sony-poobeschala-vypustit-prodolzhenie-filma-ancharted-na-kartah-ne-znachitsya_16916610021384368970.jpg" class="d-block w-100" alt="Слайд 1" />
+            <img
+                src="https://img.championat.com/s/1350x900/news/big/s/f/sony-poobeschala-vypustit-prodolzhenie-filma-ancharted-na-kartah-ne-znachitsya_16916610021384368970.jpg"
+                class="d-block w-100"
+                alt="Слайд 1"
+            />
           </div>
           <div class="carousel-item">
-            <img src="https://avatars.mds.yandex.net/get-kinopoisk-image/1777765/d64aea4b-3938-498b-91b0-ce9e440d580d/1920x" class="d-block w-100" alt="Слайд 2" />
+            <img
+                src="https://avatars.mds.yandex.net/get-kinopoisk-image/1777765/d64aea4b-3938-498b-91b0-ce9e440d580d/1920x"
+                class="d-block w-100"
+                alt="Слайд 2"
+            />
           </div>
           <div class="carousel-item">
-            <img src="https://static.okko.tv/images/v2/16443898" class="d-block w-100" alt="Слайд 3" />
+            <img
+                src="https://static.okko.tv/images/v2/16443898"
+                class="d-block w-100"
+                alt="Слайд 3"
+            />
           </div>
         </div>
         <button
@@ -96,47 +85,45 @@
         </button>
       </div>
 
-      <!-- Toast Notification -->
-      <div
-          class="toast show"
-          role="alert"
-          aria-live="assertive"
-          aria-atomic="true"
-          style="position: absolute; top: 20px; right: 20px; z-index: 1050;"
-      >
-        <div class="toast-header">
-          <img src="/images/logo.png" class="rounded me-2" alt="..." />
-          <strong class="me-auto">CineQeest</strong>
-          <small>2 sec ago</small>
-          <button
-              type="button"
-              class="btn-close"
-              data-bs-dismiss="toast"
-              aria-label="Close"
-          ></button>
-        </div>
-        <div class="toast-body">
-          Привет, ты еще не зарегестрирован, зарегестрируйся и поддержи наш проект по бесплатному кино
-        </div>
-      </div>
-
+      <!-- Movie Cards -->
       <div class="row">
-        <div class="col-sm-6 col-md-4 col-lg-3 mb-4" v-for="i in 6" :key="i">
+        <div
+            class="col-sm-6 col-md-4 col-lg-4 mb-4"
+            v-for="movie in films"
+            :key="movie.id"
+        >
           <div class="card h-100 shadow-sm">
-            <div
-                class="card-img-top d-flex align-items-center justify-content-center bg-light"
-                style="height: 200px;"
-            >
-              <span>Тут будет картинка</span>
-            </div>
-            <div class="card-body" id="title-text">
-              <h5 class="card-title">Title Film</h5>
+            <img
+                :src="movie.link_img || 'https://via.placeholder.com/150'"
+                class="card-img-top"
+                :alt="movie.name"
+                style="height: 200px; object-fit: cover;"
+            />
+            <div class="card-body">
+              <h5 class="card-title">{{ movie.name }}</h5>
               <p class="card-text text-muted">
-                Рейтинг<br />
-                Продолжительность<br />
-                Жанры
+                <strong>Рейтинг:</strong> {{ movie.ratingAvg }}<br />
+                <strong>Жанр:</strong>
+                {{ movie.categories && movie.categories.length
+                  ? movie.categories.map((cat) => cat.name).join(", ")
+                  : "Не указано" }}
+                <br />
+                <strong>Длительность:</strong> {{ movie.duration }} мин<br />
+                <strong>Год:</strong> {{ movie.year_of_issue }}<br />
+                <strong>Страна:</strong>
+                {{ movie.country?.name || "Не указано" }}<br />
+                <strong>Отзывы:</strong> {{ movie.reviewCount }}
               </p>
-              <button class="btn btn-warning">Начать просмотор</button>
+              <a
+                  :href="movie.link_kinopoisk || '#'"
+                  class="btn btn-warning"
+                  target="_blank"
+              >На Кинопоиск</a>
+              <a
+                  :href="movie.link_video || '#'"
+                  class="btn btn-primary mt-2"
+                  target="_blank"
+              >Смотреть трейлер</a>
             </div>
           </div>
         </div>
@@ -152,10 +139,32 @@
   </div>
 </template>
 
-
 <script>
+import { ref, onMounted } from "vue";
+import axios from "axios";
+
 export default {
   name: "MoviePage",
+  setup() {
+    const films = ref([]);
+
+    const fetchFilms = async () => {
+      try {
+        const response = await axios.get(
+            "https://kinotower.polytech.kz/api/v1/films"
+        );
+        films.value = response.data.films;
+      } catch (error) {
+        console.error("Ошибка при загрузке фильмов:", error);
+      }
+    };
+
+    onMounted(fetchFilms);
+
+    return {
+      films,
+    };
+  },
 };
 </script>
 
@@ -177,9 +186,6 @@ header {
   margin-top: 10px;
   margin-left: 10px;
 }
-.main-content {
-  margin-top: 70px;
-}
 .logo {
   height: 60px;
 }
@@ -191,32 +197,11 @@ header {
   box-shadow: 0 10px 15px gold;
   border-radius: 10px;
 }
-.pagination .page-link {
-  color: #000;
-}
-.pagination .page-link:hover {
-  background-color: #e9ecef;
-}
 .card-body {
   background-color: red;
   color: white;
   border-radius: 10px;
   box-shadow: 0 10px 15px gold;
-}
-
-.card-body h5,
-.card-body p {
-  color: white !important;
-}
-
-.card-body .btn {
-  color: white;
-  box-shadow: 0 10px 15px rgba(127, 8, 255, 0.5);
-}
-
-.up-in {
-  margin-right: auto;
-  padding: 10px;
 }
 .carousel-inner img {
   height: 600px;
@@ -224,31 +209,4 @@ header {
   border-radius: 10px;
   box-shadow: 0 10px 15px rgba(127, 8, 255, 0.5);
 }
-.toast-header img {
-  height: 40px;
-  width: 40px;
-}
-
-.toast-header {
-    position: fixed;
-    top: 0;
-    margin-top: 500px;
-    margin-right: 500px;
-    z-index: 100;
-    width: 350px;
-  background-color: gold;
-  border-radius: 10px;
-  }
-.toast-body{
-  position: fixed;
-  top: 0;
-  margin-top: 540px;
-  margin-right: 550px;
-  z-index: 100;
-  width: 350px;
-  background-color: gold;
-  border-radius: 10px;
-}
-
-
 </style>
