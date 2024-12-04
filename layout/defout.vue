@@ -19,7 +19,6 @@
           >
             <span class="navbar-toggler-icon"></span>
           </button>
-
           <div class="collapse navbar-collapse" id="navbarCollapse">
             <form class="d-flex" @submit.prevent="searchMovies">
               <input
@@ -42,7 +41,7 @@
                 </button>
                 <ul class="dropdown-menu" aria-labelledby="ratingDropdown">
                   <li><a class="dropdown-item" @click="sortByRating('desc')">По возрастанию</a></li>
-                  <li><a class="dropdown-item" @click="sortByRating('ask')">По убыванию</a></li>
+                  <li><a class="dropdown-item" @click="sortByRating('asc')">По убыванию</a></li>
                 </ul>
               </div>
               <div class="dropdown me-2">
@@ -80,12 +79,6 @@
               <button class="btn btn-warning me-2" type="button" @click="resetFilters">Reset</button>
             </form>
           </div>
-
-          <!-- Sign in / Sign up Buttons -->
-          <div class="logisik ms-auto">
-            <button class="btn btn-warning me-2">Sign in</button>
-            <button class="btn btn-warning">Sign up</button>
-          </div>
         </div>
       </nav>
     </header>
@@ -95,7 +88,7 @@
       <div class="row row-cols-1 row-cols-md-3 g-4">
         <div
             class="col"
-            v-for="film in filteredFilms"
+            v-for="film in paginatedFilms"
             :key="film.id"
         >
           <div class="card">
@@ -126,10 +119,23 @@
           </div>
         </div>
       </div>
+
+      <!-- Pagination -->
+      <nav aria-label="Page navigation" class="mt-4">
+        <ul class="pagination justify-content-center">
+          <li
+              class="page-item"
+              v-for="page in totalPages"
+              :key="page"
+              :class="{ active: page === currentPage }"
+          >
+            <button class="page-link" @click="currentPage = page">{{ page }}</button>
+          </li>
+        </ul>
+      </nav>
     </main>
   </div>
 </template>
-
 
 <script>
 import { ref, computed, onMounted } from "vue";
@@ -143,6 +149,8 @@ export default {
     const sortOption = ref("");
     const filterCountry = ref("");
     const filterYear = ref("");
+    const currentPage = ref(1);
+    const itemsPerPage = ref(9);
 
     const fetchFilms = async () => {
       try {
@@ -195,8 +203,18 @@ export default {
       return result;
     });
 
+    const totalPages = computed(() => {
+      return Math.ceil(filteredFilms.value.length / itemsPerPage.value);
+    });
+
+    const paginatedFilms = computed(() => {
+      const start = (currentPage.value - 1) * itemsPerPage.value;
+      const end = start + itemsPerPage.value;
+      return filteredFilms.value.slice(start, end);
+    });
+
     const searchMovies = () => {
-      console.log("Поиск фильмов:", searchQuery.value);
+      currentPage.value = 1;
     };
 
     const sortByRating = (order) => {
@@ -205,10 +223,12 @@ export default {
 
     const filterByCountry = (country) => {
       filterCountry.value = country;
+      currentPage.value = 1;
     };
 
     const filterByYear = (year) => {
       filterYear.value = year;
+      currentPage.value = 1;
     };
 
     const resetFilters = () => {
@@ -216,6 +236,7 @@ export default {
       sortOption.value = "";
       filterCountry.value = "";
       filterYear.value = "";
+      currentPage.value = 1;
     };
 
     onMounted(fetchFilms);
@@ -226,6 +247,9 @@ export default {
       uniqueCountries,
       uniqueYears,
       filteredFilms,
+      paginatedFilms,
+      totalPages,
+      currentPage,
       searchMovies,
       sortByRating,
       filterByCountry,
@@ -235,6 +259,7 @@ export default {
   },
 };
 </script>
+
 
 
 <style scoped>
